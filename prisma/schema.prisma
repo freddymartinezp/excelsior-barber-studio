@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Barber {
+  id                Int                @id @default(autoincrement())
+  name              String
+  slug              String             @unique
+  bio               String
+  specialties       String
+  photo             String?
+  isActive          Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  services          BarberService[]
+  availabilityRules AvailabilityRule[]
+  timeOff           TimeOff[]
+  blockedSlots      BlockedSlot[]
+  bookings          Booking[]
+}
+
+model Service {
+  id              Int             @id @default(autoincrement())
+  name            String
+  slug            String          @unique
+  description     String
+  price           Int
+  durationMinutes Int
+  isActive        Boolean         @default(true)
+
+  barbers         BarberService[]
+  bookings        Booking[]
+}
+
+model BarberService {
+  id        Int     @id @default(autoincrement())
+  barber    Barber  @relation(fields: [barberId], references: [id])
+  barberId  Int
+  service   Service @relation(fields: [serviceId], references: [id])
+  serviceId Int
+
+  @@unique([barberId, serviceId])
+}
+
+model AvailabilityRule {
+  id        Int    @id @default(autoincrement())
+  barber    Barber @relation(fields: [barberId], references: [id])
+  barberId  Int
+  dayOfWeek Int
+  startTime String
+  endTime   String
+}
+
+model TimeOff {
+  id        Int      @id @default(autoincrement())
+  barber    Barber   @relation(fields: [barberId], references: [id])
+  barberId  Int
+  startDate DateTime
+  endDate   DateTime
+  reason    String?
+}
+
+model BlockedSlot {
+  id        Int      @id @default(autoincrement())
+  barber    Barber   @relation(fields: [barberId], references: [id])
+  barberId  Int
+  date      DateTime
+  startTime String
+  endTime   String
+  reason    String?
+  createdAt DateTime @default(now())
+}
+
+model Customer {
+  id        Int       @id @default(autoincrement())
+  fullName  String
+  email     String    @unique
+  phone     String?
+  createdAt DateTime  @default(now())
+
+  bookings  Booking[]
+}
+
+model Booking {
+  id         Int      @id @default(autoincrement())
+  barber     Barber   @relation(fields: [barberId], references: [id])
+  barberId   Int
+  service    Service  @relation(fields: [serviceId], references: [id])
+  serviceId  Int
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  date       DateTime
+  startTime  String
+  endTime    String
+  status     String   @default("confirmed")
+  notes      String?
+  createdAt  DateTime @default(now())
+}
