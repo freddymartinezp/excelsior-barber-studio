@@ -32,7 +32,7 @@ export default function Navbar() {
           {/* Logo */}
           <Link href="/" className="flex flex-col items-start group">
             <span className="font-heading text-xl font-bold tracking-[0.2em] text-text group-hover:text-gold transition-colors duration-300">
-              EXCELSIOR BARBER STUDIO
+              EXCELSIOR BARBER SHOP
             </span>
             <span className="text-[9px] tracking-[0.3em] text-text-muted uppercase -mt-0.5">
               Gentlemen&apos;s Barbershop
